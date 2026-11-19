@@ -4,6 +4,5 @@
 numpy>=1.26
 mujoco>=3.2
 
-# OPTIONAL for --video MP4 output; not required for GUI or --headless:
 # mediapy>=1.2
 # FFmpeg executable is also needed on PATH; it is not a Python pip requirement.
