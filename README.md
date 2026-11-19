@@ -1,147 +1,181 @@
-# Unitree G1 — Continuous One-Ball Juggling in MuJoCo
+# Unitree G1 — Continuous One-Ball Juggling (MuJoCo)
 
-**ME206 Assignment 4 — supplementary source-code submission**
+**ME206 • Assignment 4 • Supporting simulation source and reproduction instructions**
 
-This project shows a Unitree G1 humanoid model performing a **continuous left-to-right and right-to-left one-ball juggling demonstration** in the MuJoCo simulator.
+This repository contains the Python source for a Unitree G1 humanoid robot performing alternating **left → right → left** one-ball juggling in the MuJoCo simulator. The primary entry point is **`apple_juggle.py`**. The earlier toss programs are retained as experimental/diagnostic versions.
 
-> **Scope / scientific accuracy:** The main demonstration uses arm inverse kinematics, motor commands, and a **scripted, gravity-shaped ball path** with smooth transitions between hands. Ball contact is disabled in this guided demo; catching and gripping are **not autonomous physical grasping**. The earlier tossing scripts are included for reference and experiments with simulated ball contact.
+> **What this demonstrates (important):** This is a **guided/simulated juggling visualization**, not an autonomous contact-based juggling controller. Arm poses are produced with damped least-squares inverse kinematics (IK) and motor commands. During the main demo, ball positions are commanded along a gravity-shaped trajectory and blended to the palm; ball–hand collision is disabled. Console `CATCH` messages indicate scripted phase transitions, **not verified physical catches**.
 
-## Repository files
+## 1. Files supplied
 
-| File | Purpose |
+| File | Description |
 | --- | --- |
-| `apple_juggle.py` | **Main submission:** repeating, guided one-ball juggling simulation |
-| `apple_toss.py` | Initial attempt at a physics-based single toss and catch |
-| `apple_toss_fixed.py` | Intermediate toss experiment with assisted gripping/catching |
-| `requirements.txt` | Minimum Python dependencies |
-| `.gitignore` | Excludes temporary and recorded files |
+| `apple_juggle.py` | **Main program**: repeating alternating single-ball transfers, interactive viewer, diagnostics, optional video export |
+| `apple_toss.py` | Original experimental physics-driven toss/catch code |
+| `apple_toss_fixed.py` | Intermediate guided-grip/assisted-catch experiment |
+| `requirements.txt` | Required Python packages for the main simulation; optional video dependency described below |
+| `.gitignore` | Excludes local environments, videos, and temporary files |
+| `README.md` | This guide |
 
-## Model files (required external dependency)
+**External robot assets:** The full Unitree G1 MuJoCo MJCF/mesh model belongs to [MuJoCo Menagerie](https://github.com/google-deepmind/mujoco_menagerie/tree/main/unitree_g1), and is **not bundled** here. You must obtain its `unitree_g1` directory including `scene.xml`, `g1.xml`, and `assets/` (plus any additional files referenced by the XML). Keep the upstream model files together so relative asset paths work. The model's upstream license applies.
 
-The robot scene is from [Google DeepMind's MuJoCo Menagerie — Unitree G1](https://github.com/google-deepmind/mujoco_menagerie/tree/main/unitree_g1). It requires **`scene.xml`, `g1.xml`, and the referenced `assets/` mesh files**. The repository is set up to use the Menagerie folder alongside the Python scripts, rather than redistributing the model.
+## 2. System requirements
 
-Expected directory structure **after setup**:
+- Windows 10/11 with **PowerShell** (instructions below), or Linux/macOS with an equivalent terminal
+- Python **3.10+**, with a Python/MuJoCo combination supported by your platform (original demonstration used Python 3.14 on Windows)
+- Working graphics drivers/display for interactive viewer; headless mode does not show a window
+- Internet access to download Python packages and the upstream G1 model
+- `git` **only if** using the terminal-clone option; not required for the browser ZIP method
+
+## 3. Download the project and model (Windows, no Git knowledge required)
+
+1. On this GitHub repository, click **Code → Download ZIP**, extract it, then open the extracted folder containing `apple_juggle.py`.
+2. Open [MuJoCo Menagerie](https://github.com/google-deepmind/mujoco_menagerie) and select **Code → Download ZIP**. Extract it.
+3. From the extracted Menagerie folder, copy its **entire `unitree_g1` directory** into a new folder named **`mujoco_menagerie`** alongside `apple_juggle.py`. Do **not** copy `scene.xml` alone: the XML references other model and mesh assets.
+4. Final folder layout (the G1 directory may contain additional files):
 
 ```text
-Unitree-G1-Juggling-Submission/
+Unitree-G1-Juggling-Simulation/
 ├── apple_juggle.py
 ├── apple_toss.py
 ├── apple_toss_fixed.py
-├── requirements.txt
 ├── README.md
-└── mujoco_menagerie/                  # Download separately (see below)
+├── requirements.txt
+├── .gitignore
+└── mujoco_menagerie/                 # downloaded separately
     └── unitree_g1/
         ├── scene.xml
         ├── g1.xml
         └── assets/
 ```
 
-## Requirements
-
-- Windows 10/11, Linux, or macOS with a graphical desktop (Windows PowerShell commands below)
-- Python 3.10 or newer; the project was developed with Python 3.14 on Windows
-- MuJoCo Python package version 3.2 or later, NumPy
-- Git (for retrieving the G1 model)
-- A computer with working graphics drivers for the interactive MuJoCo viewer
-
-## Setup — Windows PowerShell
-
-1. Download or clone **this project repository**; open PowerShell inside its folder.
-
-2. Optional but recommended: set up a virtual environment:
-
-   ```powershell
-   python -m venv .venv
-   .\.venv\Scripts\Activate.ps1
-   ```
-
-   If activation is restricted by PowerShell policy, skip the activation and use your existing `python` installation.
-
-3. Install required Python packages:
-
-   ```powershell
-   python -m pip install -r requirements.txt
-   ```
-
-4. Download the G1 simulation model (sparse clone downloads only the robot directory):
-
-   ```powershell
-   git clone --depth 1 --filter=blob:none --sparse https://github.com/google-deepmind/mujoco_menagerie.git
-   git -C mujoco_menagerie sparse-checkout set unitree_g1
-   ```
-
-   Alternatively, if you already have a `mujoco_menagerie` folder from an earlier installation, copy it into this project folder. Ensure `mujoco_menagerie/unitree_g1/scene.xml` exists.
-
-5. Launch the **continuous juggling demo**:
-
-   ```powershell
-   python apple_juggle.py --xml mujoco_menagerie/unitree_g1/scene.xml --kp 500 --kd 25
-   ```
-
-   A MuJoCo viewer should open. Close the viewer or press Ctrl+C in PowerShell to stop.
-
-## Useful run commands
-
-**Slow motion (2× slower):**
+**Alternative if Git is installed** (run from the project folder; skip browser model download):
 
 ```powershell
-python apple_juggle.py --xml mujoco_menagerie/unitree_g1/scene.xml --kp 500 --kd 25 --slowmo 2
+git clone --depth 1 --filter=blob:none --sparse https://github.com/google-deepmind/mujoco_menagerie.git
+git -C mujoco_menagerie sparse-checkout set unitree_g1
 ```
 
-**Four guided transfers without GUI (diagnostics):**
+If you already installed Menagerie earlier, you can instead pass the path to your existing `scene.xml` using `--xml`.
+
+## 4. Install Python packages (PowerShell)
+
+Open PowerShell in the project folder (File Explorer: open that folder, click address bar, type `powershell`, press Enter).
 
 ```powershell
-python apple_juggle.py --xml mujoco_menagerie/unitree_g1/scene.xml --headless --cycles 4
+python --version
+python -m pip install -r requirements.txt
 ```
 
-**Hold test:**
+A virtual environment is optional. If desired:
 
 ```powershell
-python apple_juggle.py --xml mujoco_menagerie/unitree_g1/scene.xml --hold
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-**Earlier physics-based toss experiment:**
+Then replace `python` in all subsequent commands with `.\.venv\Scripts\python.exe` when using the virtual environment.
+
+If `python` is not recognized, install a supported Python version and reopen PowerShell. If installation fails, check that you use the same Python interpreter for installation and execution.
+
+## 5. Run the main juggling demo
+
+From the project folder, check the model exists:
+
+```powershell
+Test-Path .\mujoco_menagerie\unitree_g1\scene.xml
+```
+
+It should print `True`. Then run:
+
+```powershell
+python apple_juggle.py --xml mujoco_menagerie/unitree_g1/scene.xml --kp 500 --kd 25 --cycles 10
+```
+
+A MuJoCo window opens. The robot repeatedly transfers the ball from one hand to the other. `--cycles` is the number of **transfers** (not necessarily pairs). The GUI stays open until you close the viewer or interrupt PowerShell with **Ctrl+C**. The terminal logs `THROW` and `CATCH` events.
+
+**Slow-motion viewer (2× slower):**
+
+```powershell
+python apple_juggle.py --xml mujoco_menagerie/unitree_g1/scene.xml --kp 500 --kd 25 --cycles 10 --slowmo 2
+```
+
+**Automated no-window diagnostic run (four transfers):**
+
+```powershell
+python apple_juggle.py --xml mujoco_menagerie/unitree_g1/scene.xml --kp 500 --kd 25 --headless --cycles 4
+```
+
+**Guided hold test (six simulated seconds):**
+
+```powershell
+python apple_juggle.py --xml mujoco_menagerie/unitree_g1/scene.xml --hold --headless
+```
+
+Use `python apple_juggle.py --help` for every available flag (`--flight`, `--carry-time`, `--settle-time`, `--lift`, `--release`, `--catch`, hand body/site settings, etc.). The defaults were tuned for the referenced G1 model. Differences between model revisions may require retuning.
+
+## 6. Run the earlier toss experiments (optional)
+
+These are supplied for the TA to inspect the development history; they are **not the validated main juggling demonstration**.
 
 ```powershell
 python apple_toss.py --xml mujoco_menagerie/unitree_g1/scene.xml --hold --headless
+python apple_toss_fixed.py --xml mujoco_menagerie/unitree_g1/scene.xml --hold --headless
 ```
 
-## Video recording for the assignment
+The original single-toss program was observed to let the ball drift/roll off its palm. Its inclusion is for transparency, not as a successful catch result.
 
-For a reproducible video, run the GUI simulation and capture the MuJoCo viewer using Windows Snipping Tool screen recording, Xbox Game Bar, or OBS Studio. Upload the resulting MP4 to YouTube and include the video link in the submission form.
+## 7. Capture and submit a video
 
-There is an **optional** `--video` argument in `apple_juggle.py` that requires `mediapy` and a working FFmpeg installation; screen recording avoids common FFmpeg configuration problems on Windows.
+**Recommended for Windows:** run the GUI as in section 5 and record the MuJoCo viewer using OBS Studio or Windows screen recording. Save the recording as MP4, upload to YouTube, and submit the video URL in the course form.
 
-## Implementation overview
+**Optional script-based MP4 export:** install MediaPy separately and make sure FFmpeg is on your system `PATH`:
 
-1. Loads the Unitree G1 model with `mujoco.MjSpec` and fixes its floating base.
-2. Adds sites representing the left and right palms and a red ball model.
-3. Computes arm joint targets using damped least-squares inverse kinematics.
-4. Uses a state machine with `carry → flight → settle` phases.
-5. During `flight`, computes a gravity-shaped arc for a predetermined flight time; during `carry` and `settle`, the scripted ball is kept/blended near the palm.
-6. Alternates throwing hands for repeated transfers.
+```powershell
+python -m pip install mediapy
+ffmpeg -version
+python apple_juggle.py --xml mujoco_menagerie/unitree_g1/scene.xml --kp 500 --kd 25 --cycles 10 --video unitree_juggling.mp4
+```
 
-Ball movement is scripted and is **not evidence of physically achieved robotic catching**. Timing, appearance, and pose accuracy depend on the selected G1 MJCF model and simulation environment.
+The included offscreen renderer uses **640 × 480** pixels to fit the default MuJoCo framebuffer. FFmpeg is an external executable, not provided by `requirements.txt`. If video encoding fails, use screen recording; the simulation itself can still run.
 
-## Troubleshooting
+**Demonstration video:** add the uploaded YouTube URL here before handing in: `VIDEO_URL_TO_BE_ADDED`.
 
-- **`No such file` / can't open `scene.xml`:** ensure the `mujoco_menagerie/unitree_g1` folder is downloaded and the PowerShell working directory is the project folder.
-- **`ModuleNotFoundError: mujoco` / `numpy`:** install `requirements.txt` with the same Python interpreter used to launch the script.
-- **Cannot type into PowerShell during viewer run:** close the viewer or press **Ctrl+C** before running another command.
-- **Offscreen framebuffer resolution error:** the optional renderer is configured at 640 × 480; for higher resolution increase `model.vis.global_.offwidth/offheight` before constructing the renderer.
-- **`ffmpeg` not found:** use screen recording, or install FFmpeg system-wide and verify `ffmpeg -version` works.
+## 8. How the main simulation works
 
-## Credits
+1. Uses `mujoco.MjSpec` to load the Unitree G1 MJCF model and remove the free base joint, fixing the robot in place.
+2. Adds palm sites and a red sphere to the model.
+3. Solves left/right arm joint targets with damped least-squares IK and sends actuator commands.
+4. Uses a `carry → flight → settle` state machine, alternating the throwing hand after each cycle.
+5. Computes a trajectory shaped by a constant-gravity ballistic equation; updates the ball position at each time step and blends it to the destination palm. Contact dynamics are deliberately disabled in the guided demo.
+6. Displays the simulation interactively or reports transfer events in headless mode.
 
-- Unitree G1 robot model: [Google DeepMind MuJoCo Menagerie](https://github.com/google-deepmind/mujoco_menagerie/tree/main/unitree_g1) (upstream model has its own license).
-- Physics/visualization engine: [MuJoCo](https://mujoco.org/).
+The code is the implementation record; the printed `CATCH` count alone is **not a physics-based catch-success metric**.
 
+## 9. Troubleshooting
 
-## Group Member Information
+| Problem | Action |
+| --- | --- |
+| Missing `scene.xml` or other mesh assets | Confirm the **entire** upstream `unitree_g1` directory is present; use `Test-Path` above |
+| `ModuleNotFoundError` | Run `python -m pip install -r requirements.txt` in the same Python environment used to launch the script |
+| Error about `MjSpec` or compilation | Check the installed MuJoCo version and model path; try `python -m pip show mujoco` |
+| PowerShell will not accept another command while viewer runs | Close the viewer or press **Ctrl+C** |
+| Robot/ball motion differs from demo | Check model version, palm body names, and command-line geometry/timing parameters |
+| `Image width > framebuffer width` | Use provided 640 × 480 offscreen renderer or adjust `model.vis.global_` framebuffer values before creating `Renderer` |
+| `ffmpeg` not found when exporting video | Record the screen, or install FFmpeg and ensure `ffmpeg -version` works from a new PowerShell window |
 
-- **Member 1:** Bhavya Rami
-- **Member 1 ID:** 25110265
-- **Member 2:** Tandel Smit
-- **Member 2 ID:** 25110317
-- **Member 3:** Rathod Prabhas
-- **Member 3 ID:** 25110266
+## 10. Submission checklist
+
+- [ ] All six repository files above are visible to the TA in a **public** GitHub repository
+- [ ] `README.md` is rendered on GitHub and all commands are readable
+- [ ] Upstream Unitree G1 model acquisition and folder path are documented
+- [ ] Main program runs locally using the stated command
+- [ ] YouTube demonstration is accessible to the TA (and URL is placed in the form)
+- [ ] Every group member's name and roll number is entered in the course form
+
+## Credits and reproducibility notes
+
+- [MuJoCo Menagerie — Unitree G1](https://github.com/google-deepmind/mujoco_menagerie/tree/main/unitree_g1): externally supplied robot model and associated assets; check its upstream licensing and attribution.
+- [MuJoCo](https://mujoco.org/): simulator and Python API.
+
+This repository provides the **project-specific Python code**, not a copy of the external G1 model. The installation instructions describe how to reproduce its required dependencies.
