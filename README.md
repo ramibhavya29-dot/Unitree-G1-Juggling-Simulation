@@ -136,4 +136,12 @@ Ball movement is scripted and is **not evidence of physically achieved robotic c
 - Unitree G1 robot model: [Google DeepMind MuJoCo Menagerie](https://github.com/google-deepmind/mujoco_menagerie/tree/main/unitree_g1) (upstream model has its own license).
 - Physics/visualization engine: [MuJoCo](https://mujoco.org/).
 
-**Add your team members and roll numbers to the Google Form**, as instructed by the course. Include the GitHub repository link and the YouTube video link.
+
+## Group Member Information
+
+- **Member 1:** Bhavya Rami
+- **Member 1 ID:** 25110265
+- **Member 2:** Tandel Smit
+- **Member 2 ID:** 25110317
+- **Member 3:** Rathod Prabhas
+- **Member 3 ID:** 25110266
