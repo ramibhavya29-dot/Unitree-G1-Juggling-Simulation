@@ -1,4 +1,9 @@
+# Python runtime dependencies for the main Unitree G1 juggling simulation.
+# Install: python -m pip install -r requirements.txt
+# The upstream Unitree G1 MJCF/mesh assets must be downloaded separately (README).
 numpy>=1.26
 mujoco>=3.2
-# Optional MP4 export (screen recording is a valid alternative):
+
+# OPTIONAL for --video MP4 output; not required for GUI or --headless:
 # mediapy>=1.2
+# FFmpeg executable is also needed on PATH; it is not a Python pip requirement.
