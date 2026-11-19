@@ -6,6 +6,18 @@ This repository contains the Python source for a Unitree G1 humanoid robot perfo
 
 > **What this demonstrates (important):** This is a **guided/simulated juggling visualization**, not an autonomous contact-based juggling controller. Arm poses are produced with damped least-squares inverse kinematics (IK) and motor commands. During the main demo, ball positions are commanded along a gravity-shaped trajectory and blended to the palm; ball–hand collision is disabled. Console `CATCH` messages indicate scripted phase transitions, **not verified physical catches**.
 
+## Group members
+
+Fill in the names and roll numbers below before submitting the repository link.
+
+| No. | Name | Roll number |
+| --- | --- | --- |
+| 1 | _Member 1 name_ | _Roll number_ |
+| 2 | _Member 2 name_ | _Roll number_ |
+| 3 | _Member 3 name_ | _Roll number_ |
+
+> Add or remove rows to match your actual group. Also enter **all** members in the course submission form, as required by the TA.
+
 ## 1. Files supplied
 
 | File | Description |
@@ -163,15 +175,6 @@ The code is the implementation record; the printed `CATCH` count alone is **not 
 | Robot/ball motion differs from demo | Check model version, palm body names, and command-line geometry/timing parameters |
 | `Image width > framebuffer width` | Use provided 640 × 480 offscreen renderer or adjust `model.vis.global_` framebuffer values before creating `Renderer` |
 | `ffmpeg` not found when exporting video | Record the screen, or install FFmpeg and ensure `ffmpeg -version` works from a new PowerShell window |
-
-## 10. Submission checklist
-
-- [ ] All six repository files above are visible to the TA in a **public** GitHub repository
-- [ ] `README.md` is rendered on GitHub and all commands are readable
-- [ ] Upstream Unitree G1 model acquisition and folder path are documented
-- [ ] Main program runs locally using the stated command
-- [ ] YouTube demonstration is accessible to the TA (and URL is placed in the form)
-- [ ] Every group member's name and roll number is entered in the course form
 
 ## Credits and reproducibility notes
 
