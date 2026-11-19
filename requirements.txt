@@ -1,0 +1,4 @@
+numpy>=1.26
+mujoco>=3.2
+# Optional MP4 export (screen recording is a valid alternative):
+# mediapy>=1.2
